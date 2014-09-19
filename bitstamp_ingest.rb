@@ -14,10 +14,11 @@ require 'pg'
 conn = PG::Connection.open(:dbname => 'test', :user => 'meteo', :password => 'meteo' )
 # res = conn.exec_params('SELECT $1::int AS a, $2::int AS b, $3::int AS c', [1, 2, nil])
 
+
 i = 0
 while true do
 	begin
-    puts i 
+    # puts i 
     open("https://www.bitstamp.net/api/order_book/", "rb") do |read_file|
       res = conn.exec_params( 'insert into trades( t, msg, data) values( now()::timestamptz, $$order$$, $1::json )', 
         [read_file.read] )
@@ -33,9 +34,13 @@ while true do
       res = conn.exec_params( 'insert into trades( t, msg, data) values( now()::timestamptz, $$error$$, $1::json )', 
           [$!.to_json] )
     rescue
-      # failed to write db
-      puts "error - #{$!}"
+      # if cant write db, then there's nothing else we can do, so write std-out
+      puts "#{Time.now()}: exception error - #{$!}"
     end
+  end
+
+  if i == 0
+    puts "started successfully."
   end
 
 	i = i + 1
