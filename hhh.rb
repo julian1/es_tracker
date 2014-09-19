@@ -5,7 +5,7 @@ require 'open-uri'
 
 
 json = nil
-open("http://www.bitstamp.net/api/order_book/", "rb") do |read_file|
+open("https://www.bitstamp.net/api/order_book/", "rb") do |read_file|
 	json = read_file.read
 end
 
@@ -31,8 +31,8 @@ parsed['asks'].each do |i|
 	asks_sum += price * quantity
 end
 
-puts "asks sum is #{asks_sum}"
-puts "bids sum is #{bids_sum}"
+puts "asks sum is #{asks_sum.to_i}"
+puts "bids sum is #{bids_sum.to_i}"
 
 
-puts "ratio #{bids_sum/asks_sum }"
+puts "ratio #{(bids_sum/asks_sum*100.to_i) / 100 }"
