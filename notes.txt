@@ -1,0 +1,10 @@
+
+- note how basing things around the history - gives us language independence 
+	the services are running and we can 
+	including just using db tools to query the data.
+
+- in real time, we only need to process triggers. 
+
+- Now we want something that can play the events.  
+	this can either ben
+
