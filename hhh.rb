@@ -4,21 +4,11 @@ require 'open-uri'
 
 
 
-#https://www.bitstamp.net/api/order_book/
-
-#require 'open-uri'
-#content = open('http://example.com').read
-
-#file = File.open("http://www.bitstamp.net/api/order_book/")
 json = nil
 open("http://www.bitstamp.net/api/order_book/", "rb") do |read_file|
-    # saved_file.write(read_file.read)
-
 	json = read_file.read
 end
 
-
-#file = open("o")
 
 parsed = JSON.parse(json)
 
