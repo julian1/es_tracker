@@ -2,6 +2,9 @@
 Simple event store. Doug Young 
 
 
+
+
+
 psql -d test -c 'select id, t::time, msg from trades'
 
 - putting the message bus like rabbit mq, in db enables replay. actually
@@ -22,4 +25,7 @@ External operations on queue which normally shouldn't be done but can
 
 - Now we want something that can play the events.  
 	this can either ben
+
+TODO
+	need reader and writer db roles.
 
