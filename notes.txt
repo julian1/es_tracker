@@ -7,6 +7,9 @@ Simple event store. Doug Young
 
 psql -d test -c 'select id, t::time, msg from trades'
 
+
+- remember we build the complicated state graph (either memory or db) from the event stream
+
 - putting the message bus like rabbit mq, in db enables replay. actually
 	could couple with rabbit mq! if really wanted. 
 
