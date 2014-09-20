@@ -13,50 +13,48 @@ require 'date'
 
 
 
-def process_events( res, f )
-
-    # we have to pass a function or block 
-  processed_id = -1
+def process_resultset( res, f )
+  # process a result set with events - we have to pass a function or block 
+  id = -1
   res.each do |row|
     begin
+      # process id, first to avoid exceptions being reprocessed 
       id = row['id'].to_i
       t = DateTime.parse( row['t'] ) 
       msg = row['msg']
       data = JSON.parse( row['data'] )
-      f.call(msg, t, data)
-      processed_id = id
+      f.call(id, msg, t, data)
     rescue
-      $stderr.puts "Exception #{$!}"
+      $stderr.puts "Exception id: #{id} error: #{$!}"
     end
   end
-  processed_id 
+  id 
 end
 
 
-def process_historic_events(  f )
-  conn = PG::Connection.open(:dbname => 'test', :user => 'meteo', :password => 'meteo' )
-  # res = conn.exec_params( 'select id, t, msg, data from events where msg = $$order$$ order by id limit 1', [] )
+def process_historic_events(  conn, f )
   res = conn.exec_params( 'select id, t, msg, data from events order by id ', [] )
-  process_events( res, f )
+  process_resultset( res, f )
+
+  # close res
 end
 
 
-
-def process_current_events2( conn, f )
+# need to pass the id
+def process_current_events( conn, last_id, f )
   while true
     begin 
       conn.async_exec "LISTEN events_insert"
-
       conn.wait_for_notify do |channel, pid, payload|
-        puts "Received a NOTIFY on channel #{channel}"
-        puts "from PG backend #{pid}"
-        puts "saying #{payload}"
+        puts "Received a NOTIFY on channel #{channel} #{pid} #{payload}"
+        res = conn.exec_params( 'select id, t, msg, data from events where id > $1 order by id ', [last_id] )
+        last_id = process_resultset( res, f )
+        # close res 
       end
     ensure
       conn.async_exec "UNLISTEN *"
     end
   end
-
 end
 
 
@@ -80,7 +78,10 @@ class MyClass
     @m = []
   end
 
-  def do_stuff( msg, t, data)
+  def do_stuff( id, msg, t, data)
+
+      puts "processing event #{id}"
+
     if msg == 'order'
 #       # puts "#{time} total bids:#{bids} asks:#{asks} ratio:#{ratio}  bids_sum:#{bids_sum} asks_sum:#{asks_sum}"
 #       #  @m << { :time => time, :bids => bids, :asks => asks } 
@@ -106,13 +107,18 @@ end
 # the question is does the price we can buy at move - in relation 
 # we don't even need the ticker. 
 
+conn = PG::Connection.open(:dbname => 'test', :user => 'meteo', :password => 'meteo' )
+
 x = MyClass.new()
-f = proc { |a,b,c| x.do_stuff(a,b,c) }
-last = process_historic_events( f )
-
-puts "last id #{last}"
+f = proc { |a,b,c,d| x.do_stuff(a,b,c,d) }
 
 
+
+last = process_historic_events( conn, f )
+
+#puts "last id #{last}"
+#last = 940
+process_current_events( conn, last , f )
 
 
 
