@@ -7,6 +7,8 @@ Simple event store. Doug Young
 
 psql -d test -c 'select id, t::time, msg from trades'
 
+psql -d test -c 'select id, to_char( t, $$HH12:MI:SS$$ ) as time, msg, data->$$last$$ from queue where msg = $$ticker$$ '
+
 
 - remember we build the complicated state graph (either memory or db) from the event stream
 
