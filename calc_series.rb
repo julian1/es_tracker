@@ -3,16 +3,20 @@ require 'json'
 require 'pg'
 require 'date'
 
-# ok, we want to change it around so it supports  
+# what about a running service where we want updating ? 
 # a class ..
+# issue is the transition - from historic to updated.,
+# actually we can handle this. processed 
+# actually it's really simple --- we just take all event ids that are greater than the 
+# last one we processed... 
 
-def process_events( f )
-  conn = PG::Connection.open(:dbname => 'test', :user => 'meteo', :password => 'meteo' )
 
-  # res = conn.exec_params( 'select id, t, msg, data from events where msg = $$order$$ order by id limit 1', [] )
-  res = conn.exec_params( 'select id, t, msg, data from events order by id ', [] )
 
-  # we have to pass a function or block 
+
+def process_events( res, f )
+
+    # we have to pass a function or block 
+  processed_id = -1
   res.each do |row|
     begin
       id = row['id'].to_i
@@ -20,10 +24,39 @@ def process_events( f )
       msg = row['msg']
       data = JSON.parse( row['data'] )
       f.call(msg, t, data)
+      processed_id = id
     rescue
       $stderr.puts "Exception #{$!}"
     end
   end
+  processed_id 
+end
+
+
+def process_historic_events(  f )
+  conn = PG::Connection.open(:dbname => 'test', :user => 'meteo', :password => 'meteo' )
+  # res = conn.exec_params( 'select id, t, msg, data from events where msg = $$order$$ order by id limit 1', [] )
+  res = conn.exec_params( 'select id, t, msg, data from events order by id ', [] )
+  process_events( res, f )
+end
+
+
+
+def process_current_events2( conn, f )
+  while true
+    begin 
+      conn.async_exec "LISTEN events_insert"
+
+      conn.wait_for_notify do |channel, pid, payload|
+        puts "Received a NOTIFY on channel #{channel}"
+        puts "from PG backend #{pid}"
+        puts "saying #{payload}"
+      end
+    ensure
+      conn.async_exec "UNLISTEN *"
+    end
+  end
+
 end
 
 
@@ -75,9 +108,14 @@ end
 
 x = MyClass.new()
 f = proc { |a,b,c| x.do_stuff(a,b,c) }
-process_events( f )
+last = process_historic_events( f )
+
+puts "last id #{last}"
 
 
 
 
+
+
+# need json keys to array - for the show messages
 
