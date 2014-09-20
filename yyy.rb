@@ -3,6 +3,26 @@ require 'json'
 require 'pg'
 require 'date'
 
+# class MyClass
+# 
+#   # ok, it's initialize that's called... not new
+#   def initialize
+#     @m = 123 
+#   end
+#   
+#   def value
+#     @m
+#   end
+# end
+# 
+# 
+# 
+# x = MyClass.new()
+# 
+# puts x.value()
+# 
+# abort()
+# 
 
 
 def process_queue( f )
@@ -41,10 +61,8 @@ end
 
 
 class MyClass
-#   alias oldNew  new
-   def new(*args)
-#      print "Creating a new ", self.name, "\n"
-#      oldNew(*args)
+   def initialize
+      @m = []
    end
 
   def do_stuff( msg, t, data)
@@ -65,6 +83,7 @@ class MyClass
   # and do a regression...
   # we need to store state .. 
   # which means this should be a class
+      @m << { :time => time, :bids => bids, :asks => asks } 
     end
     puts
     # how do we work with times - no we don't have to group them .
@@ -79,12 +98,16 @@ class MyClass
 
 end
 
-
+# the question is does the price we can buy at move - in relation 
+# we don't even need the ticker. 
 
 x = MyClass.new()
+
 
 f = proc { |a,b,c| x.do_stuff(a,b,c) }
 
 process_queue( f )
 
+# how can i refer to the variable ? 
+puts x.m
 

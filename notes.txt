@@ -1,8 +1,23 @@
 
+The order book, gives far more information about a what's in the market
+	compared with tech analysis of open,close,high,low etc. 
+
+If there's more qty around.
+
+It's hard to know how to do a correlation though
+
+It would be very interesting to see a 3-d graph - of the order book and (top ask price).  
+
+	- just hard-lines for the top bid/ask
+
+	- we are going to need moving averages. - to do a regression.  no 
+		the top should be difference. eg. are we increasing.
+
+		- up relative to when ? 
+
+-----
+
 Simple event store. Doug Young 
-
-
-
 
 
 psql -d test -c 'select id, t::time, msg from trades'

@@ -20,7 +20,7 @@ def process_queue( f )
 			data = JSON.parse( row['data'] )
 			f.call(msg, t, data)
 		rescue
-			puts "Exception #{$!}"
+			$stderr.puts "Exception #{$!}"
 		end
 	end
 end
@@ -44,14 +44,23 @@ do_stuff = Proc.new do | msg, t, data |
 	
 	if msg == 'order'
 		#puts "#{msg } #{t}"
+
+		top_bid = data['bids'][0][0]
+			
+		#puts "top bid #{top_bid}"
+		#puts "bids #{data['bids'] }"
+
 		bids = data['bids'].length
 		asks = data['asks'].length
 		ratio = (bids.to_f / asks.to_f ).round(3) 
 
 		bids_sum = compute_sum(data['bids']) 
 		asks_sum = compute_sum(data['asks']) 
+		sum_ratio = (bids_sum.to_f / asks_sum.to_f).round(3) 
 
-		puts "#{t} total bids:#{bids} asks:#{asks} ratio:#{ratio}  bids_sum:#{bids_sum} asks_sum:#{asks_sum}"
+		#puts "#{t} top_bid #{top_bid} total bids:#{bids} asks:#{asks} ratio:#{ratio}  bids_sum:#{bids_sum} asks_sum:#{asks_sum} ratio:#{sum_ratio}"
+
+		puts "#{t}, #{top_bid}, #{sum_ratio}"
 	end
 end
 
