@@ -7,7 +7,7 @@ psql -d test -c 'select id, t::time, msg from trades'
 - putting the message bus like rabbit mq, in db enables replay. actually
 	could couple with rabbit mq! if really wanted. 
 
-- we can stop and start the input service with no issues. and make minor
+- we can stop and start an ingest/input service with no issues. and make minor
 	changes. and there's no db migrations, reingest etc.  
 
 External operations on queue which normally shouldn't be done but can

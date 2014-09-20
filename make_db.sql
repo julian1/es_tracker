@@ -14,7 +14,7 @@ create database test;
 
 create schema meteo authorization meteo;
 
-
-CREATE TABLE trades ( id serial primary key, t timestamptz, msg varchar(10), data json ); 
-alter table trades owner to meteo;
+-- change name to queue
+CREATE TABLE queue ( id serial primary key, t timestamptz, msg varchar(10), data json ); 
+alter table queue owner to meteo;
 
