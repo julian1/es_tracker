@@ -1,6 +1,7 @@
 
 require 'json'
 require 'pg'
+require 'date'
 
 
 # s = '{"timestamp": "1411168092", "bids": [["395.24", "2.25000000"]]}'
@@ -28,13 +29,14 @@ end
 
 
 res.each do |row|
-	id = row['id']
-	t = row['t']
-
-	puts t.class
-
-	msg = row['msg']
-	data = JSON.parse( row['data'] )
+	begin
+		id = row['id'].to_i
+		t = DateTime.parse( row['t'] ) 
+		msg = row['msg']
+		data = JSON.parse( row['data'] )
+	rescue
+		puts "Exception #{$!}"
+	end
 
 	# ok, we haven't got json - we've just got a string. 
 	# it's not being parsed correctly to_json
