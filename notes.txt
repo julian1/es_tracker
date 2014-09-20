@@ -1,4 +1,19 @@
 
+Simple event store. Doug Young 
+
+
+psql -d test -c 'select id, t::time, msg from trades'
+
+- putting the message bus like rabbit mq, in db enables replay. actually
+	could couple with rabbit mq! if really wanted. 
+
+- we can stop and start the input service with no issues. and make minor
+	changes. and there's no db migrations, reingest etc.  
+
+External operations on queue which normally shouldn't be done but can
+	- can prune old errors out of the log if we want. without incident 
+	- also change msg name. 
+
 - note how basing things around the history - gives us language independence 
 	the services are running and we can 
 	including just using db tools to query the data.
