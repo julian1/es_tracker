@@ -11,24 +11,41 @@ require 'pg'
 
 conn = PG::Connection.open(:dbname => 'test', :user => 'meteo', :password => 'meteo' )
 
-res = conn.exec_params( 'select t, msg, data from queue where msg = $$order$$ limit 1', [] )
+# res = conn.exec_params( 'select id, t, msg, data from queue where msg = $$order$$ order by id limit 1', [] )
+res = conn.exec_params( 'select id, t, msg, data from queue order by id ', [] )
+
+def dostuff( msg, t, data )
+	
+	if msg == 'order'
+		#puts "#{msg } #{t}"
+		bids = data['bids'].length
+		asks = data['asks'].length
+		ratio = (bids.to_f / asks.to_f ).round(3) 
+
+		puts "#{t} total bids:#{bids} asks:#{asks} ratio:#{ratio}"
+	end
+end
+
 
 res.each do |row|
+	id = row['id']
 	t = row['t']
-	msg = row['msg']
 
+	puts t.class
+
+	msg = row['msg']
 	data = JSON.parse( row['data'] )
 
 	# ok, we haven't got json - we've just got a string. 
 	# it's not being parsed correctly to_json
 
+	# puts id
 
-	puts "#{msg } #{t}"
-
-
-	puts "data type #{data.class}" 
-	puts " #{data['timestamp']}  " 
+	#puts "data type #{data.class}" 
+	#puts " #{data['timestamp']}  " 
 	#puts data
+
+	dostuff(msg, t, data)
 end
 #
 
