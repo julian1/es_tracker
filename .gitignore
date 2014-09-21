@@ -4,3 +4,4 @@
 *.swo
 *.a
 *.iml
+web/out.json

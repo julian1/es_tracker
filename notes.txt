@@ -1,4 +1,13 @@
 
+
+ruby calc_series.rb  > web/out.json
+
+then point browser at,
+
+file:///home/meteo/bitstamp_order_book/web/x.html
+
+------
+
 shouldn't be top bid, should be top ask - meaning price we can buy at.
 	Also shouldn't be really thin.
 
@@ -56,4 +65,10 @@ External operations on queue which normally shouldn't be done but can
 
 TODO
 	need reader and writer db roles.
+
+	Should hide the db entirely, and just have
+	enqueue() method.
+
+	see.
+https://github.com/QueueClassic/queue_classic
 
