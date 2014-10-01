@@ -2,10 +2,11 @@
 
 select 
 	e.id, 
-	to_char( now() - e.t, $$HH24:MI:SS$$ ) as t, 
-	to_char( e.t, $$DD MM YYYY HH24:MI:SS$$ ) as time, 
+	to_char( now() - e.t, $$HH24:MI:SS$$ ) as d, 
+	to_char( e.t, $$YYYY-MM-DD HH24:MI:SS$$ ) as t, 
 	e.msg 
-from events e 
-order by id desc
+	from events e 
+	order by id desc
+	limit 30
 ;
 
