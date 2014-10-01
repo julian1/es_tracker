@@ -31,7 +31,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create triggers on the test tables
-CREATE TRIGGER table1_trigger BEFORE insert or update or delete on events execute procedure notify_trigger();
+CREATE TRIGGER table1_trigger 
+BEFORE insert or update or delete on events 
+execute procedure notify_trigger();
 
 --------------------------------------------------------------------
 -- Function to enqueue events
