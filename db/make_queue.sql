@@ -1,25 +1,24 @@
 
--- sudo -u postgres psql -f ./make_db.sql 
+-- sudo -u postgres psql -f ./make_db.sql
 
 -- echo 'localhost:5432:*:meteo:meteo' > ~/.pgpass
 
--- expects to have the user meteo
-
--- remove this crap.
---create database test2; 
--- \c test2; 
--- create schema meteo authorization meteo;
+-- should expect any user, or drop anything
 
 
+--------------------------------------------------------------------
+CREATE TABLE events (
+	id serial primary key,
+	t timestamptz,
+	origin varchar(40),
+	msg varchar(10),
+	data json
+);
 
-CREATE TABLE events ( id serial primary key, t timestamptz, msg varchar(10), data json ); 
--- alter table events owner to meteo;
 
-
-
+--------------------------------------------------------------------
+-- A trigger function for events
 CREATE or replace PROCEDURAL LANGUAGE plpgsql;
-
--- Create a trigger function in PL/pgSQL.
 
 CREATE FUNCTION notify_trigger() RETURNS trigger AS $$
 DECLARE
@@ -30,12 +29,31 @@ BEGIN
  return new;
 END;
 $$ LANGUAGE plpgsql;
--- Create triggers on the test tables
 
+-- Create triggers on the test tables
 CREATE TRIGGER table1_trigger BEFORE insert or update or delete on events execute procedure notify_trigger();
 
+--------------------------------------------------------------------
+-- Function to enqueue events
 
--- we want a single function as entry point to store to the queue
--- and it should really 
 
+CREATE OR REPLACE FUNCTION enqueue( msg VARCHAR(10), data json )
+RETURNS void AS $$
+BEGIN
+  INSERT INTO events( t, origin, msg, data )
+  VALUES (
+    now()::timestamptz,
+	left( 
+		coalesce( inet_client_addr()::varchar, 'none')
+		||','||
+		coalesce( pg_backend_pid()::varchar, 'none')
+		||','||
+		coalesce( user::varchar, 'none')
+		, 40 
+	),
+    msg,
+    data
+  );
+END;
+$$ LANGUAGE plpgsql;
 
