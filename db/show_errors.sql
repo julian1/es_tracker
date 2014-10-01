@@ -6,7 +6,7 @@ select
 	to_char( e.t, $$YYYY-MM-DD HH24:MI:SS$$ ) as t, 
 	e.origin as origin,
 	e.msg, 
-	e.data  
+	e.content
 from events e 
 where e.msg = $$error$$ 
 order by id desc
