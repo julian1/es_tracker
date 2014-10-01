@@ -12,8 +12,8 @@ require 'pg'
 
 class MyClient
 
-  def initialize( conn )
-    @conn = conn
+  def initialize( db_params )
+    @db_params = db_params 
     @threads = []
   end
 
@@ -21,6 +21,7 @@ class MyClient
 
     @threads << Thread.new {
 
+      conn = PG::Connection.open( @db_params  )
       start_time = Time.now
       starting = true
       loop do
@@ -33,7 +34,7 @@ class MyClient
               "data": #{read_file.read}
             }
           EOF
-          res = @conn.exec_params( 'insert into events( t, msg, data) values( now()::timestamptz, $$order2$$, $1::json )', 
+          res = conn.exec_params( 'insert into events( t, msg, data) values( now()::timestamptz, $$order2$$, $1::json )', 
             [json] )
         end
 
@@ -46,7 +47,7 @@ class MyClient
       rescue
         begin
           # On error just record the error
-          res = @conn.exec_params( 'insert into events( t, msg, data) values( now()::timestamptz, $$error$$, $1::json )', 
+          res = conn.exec_params( 'insert into events( t, msg, data) values( now()::timestamptz, $$error$$, $1::json )', 
             [$!.to_json] )
         rescue
           # if cant write db, then there's nothing else we can do, so write std-out
@@ -77,11 +78,11 @@ class MyClient
 end
 
 
+db_params = { :dbname => 'test2', :user => 'meteo', :password => 'meteo' }
 
-conn = PG::Connection.open(:dbname => 'test2', :user => 'meteo', :password => 'meteo' )
 # res = conn.exec_params('SELECT $1::int AS a, $2::int AS b, $3::int AS c', [1, 2, nil])
 
-client = MyClient.new( conn)
+client = MyClient.new( db_params )
 
 client.start_client( 'https://www.bitstamp.net/api/order_book/', 60)
 client.start_client( 'https://www.bitstamp.net/api/ticker/', 60)
