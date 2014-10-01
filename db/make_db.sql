@@ -5,15 +5,15 @@
 
 -- expects to have the user meteo
 
-create database test2; 
+-- remove this crap.
+--create database test2; 
+-- \c test2; 
+-- create schema meteo authorization meteo;
 
-\c test2; 
 
-
-create schema meteo authorization meteo;
 
 CREATE TABLE events ( id serial primary key, t timestamptz, msg varchar(10), data json ); 
-alter table events owner to meteo;
+-- alter table events owner to meteo;
 
 
 
@@ -35,6 +35,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER table1_trigger BEFORE insert or update or delete on events execute procedure notify_trigger();
 
 
-
+-- we want a single function as entry point to store to the queue
+-- and it should really 
 
 
