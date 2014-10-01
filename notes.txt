@@ -1,4 +1,12 @@
 
+	need to get combine the event processor/model
+	
+	and have a simple http server - to process ajax requests.
+
+	websockets. 
+	backbone.
+
+--
 
 ruby calc_series.rb  > web/out.json
 
