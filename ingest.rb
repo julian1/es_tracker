@@ -34,8 +34,7 @@ class MyClient
               "data": #{read_file.read}
             }
           EOF
-          res = conn.exec_params( 'insert into events( t, msg, data) values( now()::timestamptz, $$order2$$, $1::json )', 
-            [json] )
+          conn.exec_params( 'select enqueue( $$order2$$, $1::json )', [json] )
         end
 
         
@@ -47,8 +46,7 @@ class MyClient
       rescue
         begin
           # On error just record the error
-          res = conn.exec_params( 'insert into events( t, msg, data) values( now()::timestamptz, $$error$$, $1::json )', 
-            [$!.to_json] )
+          conn.exec_params( 'select enqueue( $$error$$, $1::json )', [$!.to_json] )
         rescue
           # if cant write db, then there's nothing else we can do, so write std-out
           puts "#{Time.now()}: exception error - #{$!}"
