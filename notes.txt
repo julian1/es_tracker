@@ -1,4 +1,6 @@
 
+test
+
 	need to get combine the event processor/model
 	
 	and have a simple http server - to process ajax requests.
