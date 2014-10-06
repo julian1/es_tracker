@@ -73,8 +73,13 @@ class MyClient
 end
 
 
-#db_params = { :host => 'localhost', :dbname => 'test2', :user => 'meteo', :password => 'meteo' }
-db_params = {  :dbname => 'prod', :user => 'meteo', :password => 'meteo' }
+db_params = { 
+	:host => '127.0.0.1', 
+	:dbname => 'test', 
+	:port => 5434, 
+	:user => 'events_wr', 
+	:password => 'events_wr' 
+}
 
 
 client = MyClient.new( db_params )
