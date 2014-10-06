@@ -75,10 +75,11 @@ end
 
 db_params = { 
 	:host => '127.0.0.1', 
-	:dbname => 'test', 
-	:port => 5434, 
+	:dbname => 'prod', 
+	:port => 5432, 
 	:user => 'events_wr', 
 	:password => 'events_wr' 
+
 }
 
 
