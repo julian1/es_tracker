@@ -7,11 +7,12 @@
 
 
     > pg_hba.conf
+	hostssl    all            postgres      0.0.0.0/0               reject 
+	local      all             postgres                             peer
+	hostssl    all             all        0.0.0.0/0                 md5
 
-    # Database administrative login by Unix domain socket
-    local   all             postgres                                peer
-    hostssl    all             all        0.0.0.0/0                 md5
-
+    
     > postgresql.conf
 
     listen_addresses = '*'          # what IP address(es) to listen on;
+
