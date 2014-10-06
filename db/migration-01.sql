@@ -1,12 +1,13 @@
 
--- could add other fields,
-
+-- function to wrap the event insert and table renaming 
 
 begin;
 
---alter table events add column origin varchar(40 );
+alter table trades rename to events;
 
--- alter table events rename column data to content ;
+alter table events add column origin varchar(40 );
+
+alter table events rename column data to content ;
 
 CREATE OR REPLACE FUNCTION enqueue( msg VARCHAR(10), content json )
 RETURNS void AS $$

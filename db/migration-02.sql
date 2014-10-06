@@ -1,6 +1,7 @@
 
+-- roles and permissions to support read-only actions 
+
 begin;
--- ok, readonly and writeonly users
 
 CREATE FUNCTION exec(text) returns text
 language plpgsql volatile

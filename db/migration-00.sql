@@ -5,7 +5,7 @@
 
 begin;
 
-CREATE TABLE events ( 
+CREATE TABLE trades ( 
 	id serial primary key, 
 	t timestamptz, 
 	msg varchar(10), 
@@ -29,7 +29,10 @@ END;
 $$ LANGUAGE plpgsql;
 -- Create triggers on the test tables
 
-CREATE TRIGGER table1_trigger BEFORE insert or update or delete on events execute procedure notify_trigger();
+CREATE TRIGGER table1_trigger 
+BEFORE insert or update or delete 
+on trades 
+execute procedure notify_trigger();
 
 
 commit;
