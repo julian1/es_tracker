@@ -6,11 +6,10 @@ require 'open-uri'
 require 'pg'
 
 
-
-class MyClient
+class Client
 
   def initialize( db_params )
-    @db_params = db_params 
+    @db_params = db_params
     @threads = []
   end
 
@@ -18,15 +17,15 @@ class MyClient
 
     @threads << Thread.new {
 
-      conn = PG::Connection.open( @db_params  )
+      conn = PG::Connection.open( @db_params )
       start_time = Time.now
       starting = true
       loop do
       begin
         open( url, "rb") do |read_file|
-          json = <<-EOF 
-            { 
-              "url": "#{ url }", 
+          json = <<-EOF
+            {
+              "url": "#{ url }",
               "pid": "#{Process.pid}",
               "data": #{read_file.read}
             }
@@ -34,12 +33,11 @@ class MyClient
           conn.exec_params( 'select enqueue( $$order2$$, $1::json )', [json] )
         end
 
-        
         if starting
-          puts "#{start_time} started successfully. #{url}" 
+          puts "#{start_time} started successfully. #{url}"
           starting = false
         end
-        
+
       rescue
         begin
           # On error just record the error
@@ -59,7 +57,7 @@ class MyClient
 
       # puts "sleep #{url} #{sleep_time}"
       sleep( sleep_time  )
-    end 
+    end
     }
   end
 
@@ -69,21 +67,19 @@ class MyClient
     end
   end
 
-
 end
 
 
-db_params = { 
-	:host => '127.0.0.1', 
-	:dbname => 'test', 
-	:port => 5434, 
-	:user => 'events_wr', 
-	:password => 'events_wr' 
-
+db_params = {
+  :host => '127.0.0.1',
+  :dbname => 'test',
+  :port => 5434,
+  :user => 'events_wr',
+  :password => 'events_wr'
 }
 
 
-client = MyClient.new( db_params )
+client = Client.new( db_params )
 
 client.start_client( 'https://www.bitstamp.net/api/order_book/', 60)
 client.start_client( 'https://www.bitstamp.net/api/ticker/', 60)
@@ -91,5 +87,4 @@ client.start_client( 'https://api.btcmarkets.net/market/BTC/AUD/orderbook', 60)
 client.start_client( 'https://api.btcmarkets.net/market/BTC/AUD/trades', 3 * 60)
 
 client.run()
-
 
