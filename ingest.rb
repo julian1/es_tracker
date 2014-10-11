@@ -103,6 +103,7 @@ client.start_client( 'http://data.bter.com/api/1/depth/pts_btc', 60 )
 client.start_client( 'http://data.bter.com/api/1/depth/nbt_btc', 60 ) # nubits
 client.start_client( 'http://data.bter.com/api/1/depth/nxt_btc', 60 ) # nxt
 client.start_client( 'http://data.bter.com/api/1/depth/xcp_btc', 60 ) # counterparty
+client.start_client( 'http://data.bter.com/api/1/depth/msc_btc', 60 ) # mastercoin
 
 client.run()
 
