@@ -10,7 +10,7 @@ require 'pg'
 class MyClient
 
   def initialize( db_params )
-    @db_params = db_params 
+    @db_params = db_params
     @threads = []
   end
 
@@ -24,23 +24,23 @@ class MyClient
       loop do
       begin
         open( url, "rb") do |read_file|
-          json = <<-EOF 
-            { 
-              "url": "#{ url }", 
+          json = <<-EOF
+            {
+              "url": "#{ url }",
               "pid": "#{Process.pid}",
               "data": #{read_file.read}
             }
           EOF
-          # we should not be exposing this, instead use a queue/stream/events writer. 
+          # we should not be exposing this, instead use a queue/stream/events writer.
           conn.exec_params( 'select enqueue( $$order2$$, $1::json )', [json] )
         end
 
-        
+
         if starting
-          puts "#{start_time} started successfully. #{url}" 
+          puts "#{start_time} started successfully. #{url}"
           starting = false
         end
-        
+
       rescue
         begin
           # On error just record the error
@@ -60,7 +60,7 @@ class MyClient
 
       # puts "sleep #{url} #{sleep_time}"
       sleep( sleep_time  )
-    end 
+    end
     }
   end
 
@@ -74,12 +74,12 @@ class MyClient
 end
 
 
-db_params = { 
-	:host => '127.0.0.1', 
-	:dbname => 'prod', 
-	:port => 5432, 
-	:user => 'events_wr', 
-	:password => 'events_wr' 
+db_params = {
+	:host => '127.0.0.1',
+	:dbname => 'prod',
+	:port => 5432,
+	:user => 'events_wr',
+	:password => 'events_wr'
 
 }
 
@@ -88,9 +88,20 @@ client = MyClient.new( db_params )
 
 client.start_client( 'https://www.bitstamp.net/api/order_book/', 60)
 client.start_client( 'https://www.bitstamp.net/api/ticker/', 60)
+
 client.start_client( 'https://api.btcmarkets.net/market/BTC/AUD/orderbook', 60)
 client.start_client( 'https://api.btcmarkets.net/market/BTC/AUD/trades', 3 * 60)
 
-client.run()
+# bter
+client.start_client( 'http://data.bter.com/api/1/depth/btc_usd', 60 )
 
+client.start_client( 'http://data.bter.com/api/1/depth/btsx_btc', 60 )
+client.start_client( 'http://data.bter.com/api/1/depth/btc_bitusd' , 60 )
+client.start_client( 'http://data.bter.com/api/1/depth/bitusd_usd', 60 )
+client.start_client( 'http://data.bter.com/api/1/depth/pts_btc', 60 )
+client.start_client( 'http://data.bter.com/api/1/depth/nbt_btc', 60 ) # nubits
+client.start_client( 'http://data.bter.com/api/1/depth/nxt_btc', 60 ) # nxt
+
+
+client.run()
 
