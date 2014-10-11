@@ -31,6 +31,7 @@ class MyClient
               "data": #{read_file.read}
             }
           EOF
+          # we should not be exposing this, instead use a queue/stream/events writer. 
           conn.exec_params( 'select enqueue( $$order2$$, $1::json )', [json] )
         end
 
