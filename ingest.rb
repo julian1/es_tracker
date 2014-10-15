@@ -44,9 +44,17 @@ class MyClient
       rescue
         begin
           # On error just record the error
-          conn.exec_params( 'select enqueue( $$error$$, $1::json )', [$!.to_json] )
+          json = <<-EOF
+            {
+              "url": "#{ url }",
+              "pid": "#{Process.pid}",
+              "data": #{$!.to_json}
+            }
+          EOF
+          conn.exec_params( 'select enqueue( $$error$$, $1::json )', [json] )
         rescue
-          # if cant write db, then there's nothing else we can do, so write std-out
+          # if we coulldn't write the db, then there's nothing else to do but write std-out
+	        # or file	
           puts "#{Time.now()}: exception error - #{$!}"
         end
       end
@@ -92,9 +100,17 @@ client.start_client( 'https://www.bitstamp.net/api/ticker/', 60)
 client.start_client( 'https://api.btcmarkets.net/market/BTC/AUD/orderbook', 60)
 client.start_client( 'https://api.btcmarkets.net/market/BTC/AUD/trades', 3 * 60)
 
+# error tracking should record the url we attept to store to.
+
+# we should be doing all this on a single http connction
+# also,
+
+### test for errors
+###client.start_client( 'http://data.bter.com/api2/2/depth/btc_usd', 60 )
+
+
 # bter
 client.start_client( 'http://data.bter.com/api/1/depth/btc_usd', 60 )
-
 client.start_client( 'http://data.bter.com/api/1/depth/btsx_btc', 60 )
 client.start_client( 'http://data.bter.com/api/1/depth/btc_bitusd' , 60 )
 client.start_client( 'http://data.bter.com/api/1/depth/bitusd_usd', 60 )
@@ -104,6 +120,9 @@ client.start_client( 'http://data.bter.com/api/1/depth/nbt_btc', 60 ) # nubits
 client.start_client( 'http://data.bter.com/api/1/depth/nxt_btc', 60 ) # nxt
 client.start_client( 'http://data.bter.com/api/1/depth/xcp_btc', 60 ) # counterparty
 client.start_client( 'http://data.bter.com/api/1/depth/msc_btc', 60 ) # mastercoin
+
+client.start_client( 'http://data.bter.com/api/1/marketlist', 5 * 60 ) # total exchange stats
+
 
 client.run()
 
